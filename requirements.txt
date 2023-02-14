@@ -3,3 +3,4 @@ Psycopg2
 djangorestframework-gis
 djangorestframework-simplejwt
 drf-yasg
+django-countries
