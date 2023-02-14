@@ -1,0 +1,5 @@
+Django
+Psycopg2
+djangorestframework-gis
+djangorestframework-simplejwt
+drf-yasg
