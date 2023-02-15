@@ -20,6 +20,9 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class SiteSerializer(GeoFeatureModelSerializer):
+    created_by = serializers.CharField(source='created_by.id', read_only=True)
+    country = serializers.CharField(source='country.name', read_only=True)
+
     class Meta:
         model = Site
         geo_field = "position"

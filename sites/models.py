@@ -8,6 +8,9 @@ class Company(BaseModel):
     name = models.CharField(max_length=100)
     country = CountryField()
 
+    def __str__(self):
+        return f'{self.name} - {self.country}'
+
 
 # Regular GeoDjango WorldBorder model. Filled from helpers.data
 class WorldBorder(BaseModel):
@@ -40,11 +43,12 @@ class Site(BaseModel):
         DONE = 'done', 'Done'
         FROZEN = 'frozen', 'Frozen'
 
+    name = models.CharField(max_length=256)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     country = models.ForeignKey(WorldBorder, on_delete=models.PROTECT)
 
-    position = models.PointField(srid=4326)
+    position = models.PointField(srid=4326, geography=True)
     mpoly = models.MultiPolygonField(srid=4326, null=True)
 
     status = models.CharField(
