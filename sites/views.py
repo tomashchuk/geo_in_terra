@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from .models import WorldBorder
+from .permissions import IsAdminUserOrReadOnly
+from .serializers import WorldBorderSerializer
+
+
+class WorldBorderViewSet(viewsets.ModelViewSet):
+    queryset = WorldBorder.objects.all()
+    serializer_class = WorldBorderSerializer
+    permission_classes = [IsAdminUserOrReadOnly, ]
+
