@@ -44,7 +44,9 @@ class Site(BaseModel):
         FROZEN = 'frozen', 'Frozen'
 
     name = models.CharField(max_length=256)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
+
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT, related_name='created_sites')
+    updated_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name='updated_sites')
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     country = models.ForeignKey(WorldBorder, on_delete=models.PROTECT)
 
