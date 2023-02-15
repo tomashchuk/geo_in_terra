@@ -1,8 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_gis.filters import DistanceToPointFilter
+from rest_framework_gis.filters import DistanceToPointOrderingFilter
+from rest_framework.filters import SearchFilter
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .filters import CountryIsoFilter, PolygonContainsFilter
 from .models import WorldBorder, Company, Site
 from .permissions import IsAdminUserOrReadOnly
 from .serializers import WorldBorderSerializer, CompanySerializer, SiteSerializer
@@ -14,11 +18,20 @@ class WorldBorderViewSet(viewsets.ModelViewSet):
     serializer_class = WorldBorderSerializer
     permission_classes = [IsAdminUserOrReadOnly, ]
 
+    filter_backends = (PolygonContainsFilter, DjangoFilterBackend, SearchFilter)
+    polygon_contains_filter_field = 'mpoly'
+    search_fields = ('name', )
+    filterset_fields = ('active', )
+
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsAdminUserOrReadOnly, ]
+
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    search_fields = ('name', )
+    filterset_fields = ('country', )
 
 
 class SiteViewSet(viewsets.ModelViewSet):
@@ -26,9 +39,21 @@ class SiteViewSet(viewsets.ModelViewSet):
     serializer_class = SiteSerializer
     permission_classes = [IsAuthenticated]
 
-    # Filters a queryset to only those instances within a certain distance of a given point
+    # DistanceToPointFilter - filters a queryset to only those instances within a certain distance of a given point
+    # CountryIsoFilter - filters by iso2 of country
+    # PolygonContainsFilter - filters by point in polygon
     distance_filter_field = 'position'
-    filter_backends = (DistanceToPointFilter, )
+    polygon_contains_filter_field = 'mpoly'
+    filter_backends = (
+        DistanceToPointOrderingFilter,
+        PolygonContainsFilter,
+        CountryIsoFilter,
+        DjangoFilterBackend,
+        SearchFilter
+    )
+
+    search_fields = ('name', )
+    filterset_fields = ('status', )
 
     def _get_country(self, serializer):
         return WorldBorderManager().get_by_geo_point(serializer.initial_data.get("position"))
