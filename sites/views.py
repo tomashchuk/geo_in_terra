@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
 from .models import WorldBorder, Company, Site
@@ -37,3 +38,10 @@ class SiteViewSet(viewsets.ModelViewSet):
             serializer.save(updated_by=self.request.user, country=country)
             return
         serializer.save(updated_by=self.request.user)
+
+    def perform_destroy(self, instance: Site):
+        if instance.created_by.id == self.request.user.id:
+            instance.delete()
+            return
+
+        raise ValidationError("You cannot delete this construction site. Ask the creator to do this")
