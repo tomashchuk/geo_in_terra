@@ -9,7 +9,7 @@ class CompanyAdmin(admin.ModelAdmin):
 
 @admin.register(Site)
 class SiteAdmin(admin.OSMGeoAdmin):
-    list_display = ('name', 'company', 'country', )
+    list_display = ('name', 'company', 'country', 'created_by', 'updated_by')
     list_filter = ('company', 'country')
     search_fields = ('name', )
 

@@ -24,6 +24,16 @@ class SiteViewSet(viewsets.ModelViewSet):
     serializer_class = SiteSerializer
     permission_classes = [IsAuthenticated]
 
+    def _get_country(self, serializer):
+        return WorldBorderManager().get_by_geo_point(serializer.initial_data.get("position"))
+
     def perform_create(self, serializer):
-        country = WorldBorderManager().get_by_geo_point(serializer.initial_data.get("position"))
+        country = self._get_country(serializer)
         serializer.save(created_by=self.request.user, country=country)
+
+    def perform_update(self, serializer):
+        if serializer.initial_data.get("position"):
+            country = self._get_country(serializer)
+            serializer.save(updated_by=self.request.user, country=country)
+            return
+        serializer.save(updated_by=self.request.user)
