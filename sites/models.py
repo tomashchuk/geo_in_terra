@@ -38,5 +38,7 @@ class WorldBorder(BaseModel):
 
     mpoly = models.MultiPolygonField(srid=4326)
 
+    active = models.BooleanField(default=True)
+
     def __str__(self):
         return self.name
