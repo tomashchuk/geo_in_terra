@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_gis.filters import DistanceToPointFilter
 
 from .models import WorldBorder, Company, Site
 from .permissions import IsAdminUserOrReadOnly
@@ -24,6 +25,10 @@ class SiteViewSet(viewsets.ModelViewSet):
     queryset = Site.objects.all()
     serializer_class = SiteSerializer
     permission_classes = [IsAuthenticated]
+
+    # Filters a queryset to only those instances within a certain distance of a given point
+    distance_filter_field = 'position'
+    filter_backends = (DistanceToPointFilter, )
 
     def _get_country(self, serializer):
         return WorldBorderManager().get_by_geo_point(serializer.initial_data.get("position"))
