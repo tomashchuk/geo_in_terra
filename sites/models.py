@@ -9,20 +9,29 @@ class Company(BaseModel):
     country = CountryField()
 
 
-# class Worker(BaseModel):
-#     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+class Site(BaseModel):
+
+    class Status(models.TextChoices):
+        TODO = 'todo', 'To Do'
+        IN_PROGRESS = 'in_progress', 'In Progress'
+        READY_FOR_REVIEW = 'ready_for_review', 'Ready For Review'
+        DONE = 'done', 'Done'
+        FROZEN = 'frozen', 'Frozen'
+
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+
+    position = models.PointField(srid=4326)
+    mpoly = models.MultiPolygonField(srid=4326, null=True)
+
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+        default=Status.TODO,
+    )
 
 
-# class Site(BaseModel):
-#     created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-#     company = models.ForeignKey(Company, on_delete=models.SET_NULL)
-#     country = CountryField()
-#
-#     position = models.PointField(srid=4326)
-#     geom = models.MultiPolygonField(srid=4326)
-
-
-# Regular GeoDjango WorldBorder model
+# Regular GeoDjango WorldBorder model. Filled from helpers.data
 class WorldBorder(BaseModel):
     fips = models.CharField(max_length=2, null=True)
     iso2 = models.CharField(max_length=2)
