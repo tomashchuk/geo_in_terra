@@ -13,3 +13,6 @@
 
 
 ### Exposed on 0.0.0.0:8000
+
+### Swagger is available on /swagger/
+### Auto Generated documentation - on /redoc/
